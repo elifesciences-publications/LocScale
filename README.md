@@ -1,3 +1,6 @@
+__What is LocScale__
+
+
 This is a set of tools for cryo-EM density modification using local estimators
 
 
