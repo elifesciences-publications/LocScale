@@ -1,17 +1,18 @@
-## __What is LocScale__?
+### What is LocScale?
 ---
 
 
-This is a set of tools for cryo-EM density modification using local estimators
+Locscale is a density modification procedure to enhance interpretability of cryo-EM density maps   
+<br>
 
 
+__LocRes__   - local resolution estimation based on windowed FSC calculation
+
+__LocScale__ - local sharpening based on reference-based amplitude scaling
+
+__LocFSC__   - local model validation based on FSC<sub>ref</sub> calculations  
+<br>  
 Please see the [Wiki](https://git.embl.de/jakobi/LocScale/wikis/home) pages for dowload/usage instructions and tutorial.
 
-LocRes   - local resolution estimation based on windowed FSC calculation
 
-LocScale - local sharpening based on reference-based amplitude scaling
-
-LocFSC   - local model validation based on FSC<sub>ref</sub> calculations
-
-
-Questions and bug reports: arjen.jakobi@embl.de
+Questions and bug reports: [arjen.jakobi@embl.de](arjen.jakobi@embl.de)
