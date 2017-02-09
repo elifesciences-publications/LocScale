@@ -6,7 +6,7 @@ Locscale is a density modification procedure to enhance interpretability of cryo
   
 LocScale is developed in the Sachse lab at EMBL and written by [Arjen Jakobi](@jakobi).
 <br>   
-[__LocRes__](LocRes)   - local resolution estimation based on windowed FSC calculation
+[__LocRes__](https://git.embl.de/jakobi/LocScale/wikis/home/LocRes)   - local resolution estimation based on windowed FSC calculation
 
 __LocScale__ - local sharpening based on reference-based amplitude scaling
 
