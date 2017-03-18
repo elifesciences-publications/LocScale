@@ -1,6 +1,6 @@
 ### What is LocScale?
 ---
-
+LocScale/blob/7fc932c6145dfdc93755ad5653b22b8e3a26d866/doc/img/EM_cyle_DM_1.jpg
 
 Locscale is a density modification procedure to enhance interpretability of cryo-EM density maps  
   
