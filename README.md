@@ -9,7 +9,7 @@ LocScale is developed in the Sachse lab at EMBL by [Arjen Jakobi](@jakobi) and C
 
 [__LocScale__](https://git.embl.de/jakobi/LocScale/wikis/LocScale) - local sharpening based on reference-based amplitude scaling
 
-[__LocFSC__](https://git.embl.de/jakobi/LocScale/wikis/home/LocFSC)   - local model validation based on FSC<sub>ref</sub> calculations  
+[//]: # ([__LocFSC__](https://git.embl.de/jakobi/LocScale/wikis/home/LocFSC)   - local model validation based on FSC<sub>ref</sub> calculations)  
 <br>  
 Please see the [Wiki](https://git.embl.de/jakobi/LocScale/wikis/home) pages for dowload/usage instructions and tutorial.
 
