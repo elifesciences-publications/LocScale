@@ -1,5 +1,5 @@
 """
-Script to generate reference model map for LocScale scaline
+Script to generate reference model map for LocScale
 
 Uses cctbx libraries - please cite:
 Grosse-Kunstleve RW et al. J. Appl. Cryst. 35:126-136 (2002)
