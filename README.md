@@ -1,4 +1,4 @@
-## LocScale – model-based density modification for improved contrast in cryo-EM maps
+## LocScale – reference-based density modification for improved contrast in cryo-EM maps
 ---
 
 Locscale is a density modification procedure to enhance interpretability of cryo-EM density maps  
