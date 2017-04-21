@@ -1,10 +1,10 @@
 """
-Script to generate reference model map for LocScale scaline
+Script to generate reference model map for LocScale scaling
 
 Uses cctbx libraries - please cite:
 Grosse-Kunstleve RW et al. J. Appl. Cryst. 35:126-136 (2002)
 
-Author: Arjen Jakobi, EMBL (2016) 
+Arjen Jakobi, EMBL (2016) 
 """
 
 import argparse
