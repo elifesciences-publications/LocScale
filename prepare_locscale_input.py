@@ -179,7 +179,6 @@ def compute_model_map(xrs, target_map, symm, d_min, table, model_map_out):
         space_group=cg.space_group(),
         map_data=fc_map,
         labels=flex.std_string([""]))
-     
     return cg, fc_map 
 
 def compute_real_space_correlation_simple(fc_map, em_data):
