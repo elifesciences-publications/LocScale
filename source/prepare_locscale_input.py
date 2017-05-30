@@ -185,7 +185,7 @@ def compute_model_map(xrs, target_map, symm, d_min, table, model_map_out):
 def compute_real_space_correlation_simple(fc_map, em_data):
     cc_overall_cell = flex.linear_correlation(x=em_data.as_1d(),
                       y=fc_map.as_1d()).coefficient()
-    print "\nOverall real-space correlation (unit cell)   : %g\n" % cc_overall_cell
+    print "\nOverall real-space correlation (overall)   : %g\n" % cc_overall_cell
 
 def compute_real_space_correlation(xrs, input_model, fc_map, shifted_map, em_data, cg, symm, rscc_out, detail, atom_radius):
     unit_cell_for_interpolation = shifted_map.grid_unit_cell()
@@ -218,7 +218,6 @@ def compute_real_space_correlation(xrs, input_model, fc_map, shifted_map, em_dat
                     rad = hydrogen_atom_radius
                 else: 
                     rad = atom_radius
-
                 if (not (atom.element_is_hydrogen() and not use_hydrogens)):
                     map_value_em = em_data.eight_point_interpolation(unit_cell.fractionalize(atom.xyz))
                     map_value_fc = fc_map.eight_point_interpolation(unit_cell.fractionalize(atom.xyz))
@@ -228,27 +227,25 @@ def compute_real_space_correlation(xrs, input_model, fc_map, shifted_map, em_dat
                     residue_mv1.append(map_value_em)
                     residue_mv2.append(map_value_fc)
                     residue_rad.append(rad)
-            if (detail == "residue"):
-                sel = maptbx.grid_indices_around_sites(
-                unit_cell=unit_cell,
-                fft_n_real=shifted_map.data.focus(),
-                fft_m_real=shifted_map.data.all(),
-                sites_cart=residue_sites_cart,
-                site_radii=residue_rad)
-                cc = flex.linear_correlation(x=em_data.select(sel),
-                y=fc_map.select(sel)).coefficient()
-                result = group_args(
-                residue=residue,
-                chain_id=chain.id,
-                id_str=residue_id_str,
-                cc=cc,
-                map_value_em=flex.mean(residue_mv1),
-                map_value_fc=flex.mean(residue_mv2),
-                b=flex.mean(residue_b),
-                occupancy=flex.mean(residue_occ),
-                n_atoms=residue_sites_cart.size())
-                results.append(result)
-    f = open(rscc_out, 'w')
+            sel = maptbx.grid_indices_around_sites(
+            unit_cell=unit_cell,
+            fft_n_real=shifted_map.data.focus(),
+            fft_m_real=shifted_map.data.all(),
+            sites_cart=residue_sites_cart,
+            site_radii=residue_rad)
+            cc = flex.linear_correlation(x=em_data.select(sel),
+            y=fc_map.select(sel)).coefficient()
+            result = group_args(
+            residue=residue,
+            chain_id=chain.id,
+            id_str=residue_id_str,
+            cc=cc,
+            map_value_em=flex.mean(residue_mv1),
+            map_value_fc=flex.mean(residue_mv2),
+            b=flex.mean(residue_b),
+            occupancy=flex.mean(residue_occ),
+            n_atoms=residue_sites_cart.size())
+            results.append(result)
     cc_sum = 0
     for result in results:
         cc_sum += result.cc
@@ -256,10 +253,6 @@ def compute_real_space_correlation(xrs, input_model, fc_map, shifted_map, em_dat
     cc_overall_cell = flex.linear_correlation(x=em_data.as_1d(), y=fc_map.as_1d()).coefficient()
 
     print "\nOverall real-space correlation (around atoms): %g" % cc_overall_model
-    print "Overall real-space correlation (unit cell)   : %g\n" % cc_overall_cell
-    for result in results:
-        f.write(result.id_str + "  " + str(result.cc) + "\n")
-    f.close()
 
 def prepare_reference_and_experimental_map_for_locscale (args, out=sys.stdout):
     """
