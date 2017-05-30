@@ -1,7 +1,7 @@
-## LocScale – reference-based density modification for improved contrast in cryo-EM maps
+## LocScale – reference-based density scaling for improved local contrast in cryo-EM maps
 ---
 
-Locscale is a density modification procedure to enhance interpretability of cryo-EM density maps  
+Locscale is a density scaling (sharpening) procedure to enhance interpretability of cryo-EM density maps  
   
 LocScale is developed in the Sachse lab at EMBL by [Arjen Jakobi](@jakobi) and [Carsten Sachse](@sachse).
 <br>   
@@ -14,4 +14,6 @@ LocScale is developed in the Sachse lab at EMBL by [Arjen Jakobi](@jakobi) and [
 #### Please see the [__Wiki__](https://git.embl.de/jakobi/LocScale/wikis/home) pages for dowload/usage instructions and tutorial.
 
 <br>
-Questions and bug reports: <arjen.jakobi@embl.de> or <carsten.sachse@embl.de>
+For bug reports please use the [GitLab issue tracker](https://git.embl.de/jakobi/LocScale/issues).
+  
+For questions or comments please contact <arjen.jakobi@embl.de> 
