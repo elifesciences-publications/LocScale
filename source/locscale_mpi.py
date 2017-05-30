@@ -5,7 +5,7 @@ import argparse, math, os, sys
 
 progname = os.path.basename(sys.argv[0])
 revision = filter(str.isdigit, "$Revision: 1 $")  # to be updated by gitlab after every commit 
-datmod = "$Date: 2017-03-06 22:14:31 +0200 (Mo, 06 Mar 2017) $"  # to be updated by gitlab fter every commit      
+datmod = "$Date: 2017-05-30 11:03:31 +0200 (Tu, 30 May 2017) $"  # to be updated by gitlab fter every commit      
 author = 'authors: Arjen J. Jakobi and Carsten Sachse, EMBL' + '; ' + datmod [8:18]        
 version = progname + '  0.1' + '  (r' + revision + ';' + datmod [7:18] + ')'
      
