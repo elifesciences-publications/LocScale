@@ -218,9 +218,9 @@ def prepare_mask_and_maps_for_scaling(args):
         mask = binarize(get_image(args.mask), 0.5)
         
     if args.window_size is None:
-        wn = int(round(7 * 3 * args.apix)) # set default window size to 7 times average resolution
+        wn = int(math.ceil(round((7 * 3 * args.apix)) /2.) * 2) # set default window size to 7 times average resolution
     elif args.window_size is not None:
-        wn = math.ceil(args.window_size / 2.) * 2
+        wn = int(math.ceil(args.window_size / 2.) * 2)
 
     window_bleed_and_pad = check_for_window_bleeding(mask, wn)
     if window_bleed_and_pad:
