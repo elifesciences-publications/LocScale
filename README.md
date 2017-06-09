@@ -16,4 +16,4 @@ LocScale is developed in the Sachse lab at EMBL by [Arjen Jakobi](@jakobi) and [
 <br>
 For bug reports please use the [GitLab issue tracker](https://git.embl.de/jakobi/LocScale/issues).
   
-For questions or comments please contact <arjen.jakobi@embl.de> 
+For questions or comments please contact <arjen.jakobi@embl.de> or <carsten.sachse@embl.de>
