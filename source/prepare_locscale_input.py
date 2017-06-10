@@ -44,10 +44,7 @@ cmdl_parser.add_argument('-ma', '--mask', type=argparse.FileType('r'), help='Inp
 cmdl_parser.add_argument('-p', '--apix', type=float, help='pixel size in Angstrom')
 cmdl_parser.add_argument('-dmin', '--resolution', type=float, help='map resolution in Angstrom')
 cmdl_parser.add_argument('-t', '--table', type=str, default="electron", help='Scattering table [electron, itcc]')
-cmdl_parser.add_argument('-b', '--b_factor', type=float, default=None, help='set bfactor in [A^2]')
 cmdl_parser.add_argument('-o', '--outfile', type=str, default="rscc.dat", help='Output filename for RSCC data')
-cmdl_parser.add_argument('--rscc', action="store_true", help='compute per-residue RSCC')
-
 
 def generate_output_file_names(map, model, mask):
     map_out = os.path.splitext(map.name)[0] + "_4locscale.mrc"
@@ -66,22 +63,6 @@ def get_dmin(dmin, target_map):
         print "Model map will be computed to " + str(d_min) + " Angstrom\n"
     return d_min
 
-def set_detail_level_and_radius(d_min):
-    if(d_min < 2.0): 
-        detail = "atom"
-    else:            
-        detail = "residue"
-    
-    if(d_min < 1.0):                    
-        atom_radius = 1.0
-    elif(d_min >= 1.0 and d_min < 2.0):   
-        atom_radius = 1.5
-    elif(d_min >= 2.0 and d_min < 4.0): 
-        atom_radius = 2.0
-    else:                               
-        atom_radius = 2.5
-    return detail, atom_radius
-
 def check_for_zero_B_factor(xrs):
     xrs = xrs.expand_to_p1(sites_mod_positive=True)
     bs = xrs.extract_u_iso_or_u_equiv()
@@ -91,11 +72,6 @@ def check_for_zero_B_factor(xrs):
         print "Input model contains %d atoms with B=0\n" % n_zeros
 
 def print_map_statistics(input_model, target_map):
-#     try:
-#         assert (not None in [input_model, target_map])
-#     except AssertionError:
-#         print "Input model or map does not exist. Please provide a valid file."
-#         exit(1)
     print "Map dimensions:", target_map.data.all()
     print "Map origin   :", target_map.data.origin()
     print "Map unit cell:", target_map.unit_cell_parameters
@@ -217,11 +193,7 @@ def prepare_reference_and_experimental_map_for_locscale (args, out=sys.stdout):
     shift_map_to_zero_origin(mask, cg, mask_out)
     em_data, shifted_map = shift_map_to_zero_origin(target_map, cg, map_out, return_map=True)
     
-    if args.rscc:
-        detail, atom_radius = set_detail_level_and_radius(d_min)
-        compute_real_space_correlation(xrs, shifted_model, fc_map, shifted_map, em_data, cg, symm, args.outfile, detail, atom_radius)
-    else:
-        compute_real_space_correlation_simple(em_data, fc_map)	
+    compute_real_space_correlation_simple(em_data, fc_map)	
 
 if (__name__ == "__main__") :
     args = cmdl_parser.parse_args()
