@@ -1,10 +1,10 @@
 """
-Script to generate reference model map for LocScale scaline
+Script to generate reference model map for LocScale scaling
 
 Uses cctbx libraries - please cite:
 Grosse-Kunstleve RW et al. J. Appl. Cryst. 35:126-136 (2002)
 
-Author: Arjen Jakobi, EMBL (2016) 
+Arjen Jakobi, EMBL (2016) 
 """
 
 import argparse
@@ -49,11 +49,12 @@ cmdl_parser.add_argument('-o', '--outfile', type=str, default="rscc.dat", help='
 cmdl_parser.add_argument('--rscc', action="store_true", help='compute per-residue RSCC')
 
 
-def generate_output_file_names(map, model):
+def generate_output_file_names(map, model, mask):
     map_out = os.path.splitext(map.name)[0] + "_4locscale.mrc"
     model_out = os.path.splitext(model.name)[0] + "_4locscale.pdb"
     model_map_out = os.path.splitext(model.name)[0] + "_4locscale.mrc"
-    return map_out, model_out, model_map_out
+    mask_out = os.path.splitext(mask.name)[0] + "_4locscale.mrc"
+    return map_out, model_out, model_map_out, mask_out
 
 def get_dmin(dmin, target_map):
     if dmin is not None:
@@ -122,9 +123,10 @@ def estimate_pixel_size_from_unit_cell(target_map):
 def determine_shift_from_map_header(target_map):
     origin = target_map.data.origin()
     translation_vector = [0 - target_map.data.origin()[0], 0 - target_map.data.origin()[1], 0 - target_map.data.origin()[2]]
+    print translation_vector
     return translation_vector 
 
-def shift_map_to_zero_origin(target_map, cg, map_out):
+def shift_map_to_zero_origin(target_map, cg, map_out, return_map=False):
     em_data = target_map.data.as_double()
     em_data = em_data.shift_origin()
     ccp4_map.write_ccp4_map(
@@ -133,8 +135,9 @@ def shift_map_to_zero_origin(target_map, cg, map_out):
         space_group=cg.space_group(),
         map_data=em_data,
         labels=flex.std_string([""]))
-    shifted_map = file_reader.any_file(map_out).file_object
-    return em_data, shifted_map
+    if return_map is True:
+        shifted_map = file_reader.any_file(map_out).file_object
+        return em_data, shifted_map
 
 def apply_shift_transformation_to_model(input_model, target_map, symm, pixel_size, model_out):
     sg = symm.space_group()
@@ -179,87 +182,20 @@ def compute_model_map(xrs, target_map, symm, d_min, table, model_map_out):
         space_group=cg.space_group(),
         map_data=fc_map,
         labels=flex.std_string([""]))
-     
     return cg, fc_map 
 
 def compute_real_space_correlation_simple(fc_map, em_data):
     cc_overall_cell = flex.linear_correlation(x=em_data.as_1d(),
                       y=fc_map.as_1d()).coefficient()
-    print "\nOverall real-space correlation (overall)   : %g\n" % cc_overall_cell
-
-def compute_real_space_correlation(xrs, input_model, fc_map, shifted_map, em_data, cg, symm, rscc_out, detail, atom_radius):
-    unit_cell_for_interpolation = shifted_map.grid_unit_cell()
-    frac_matrix = unit_cell_for_interpolation.fractionalization_matrix()
-    sites_cart = xrs.sites_cart()
-    sites_frac = xrs.sites_frac()
-    pdb_hierarchy = input_model.construct_hierarchy()
-    pdb_hierarchy.atoms().reset_i_seq()
-    results = []
-    atom_radius = atom_radius
-    # need to change these lines - some problems with hyrogens
-    hydrogen_atom_radius = 0.8
-    use_hydrogens = False
-    unit_cell = cg.unit_cell()
-    for chain in pdb_hierarchy.chains():
-      for residue_group in chain.residue_groups():
-        for conformer in residue_group.conformers():
-          for residue in conformer.residues():
-            residue_id_str = "%2s %1s %3s %4s %1s" % (chain.id, conformer.altloc,
-                                                      residue.resname, residue.resseq, residue.icode)
-            residue_sites_cart = flex.vec3_double()
-            residue_b = flex.double()
-            residue_occ = flex.double()
-            residue_mv1 = flex.double()
-            residue_mv2 = flex.double()
-            residue_rad = flex.double()
-            for atom in residue.atoms():
-                atom_id_str = "%s %4s" % (residue_id_str, atom.name)
-                if (atom.element_is_hydrogen()): 
-                    rad = hydrogen_atom_radius
-                else: 
-                    rad = atom_radius
-                if (not (atom.element_is_hydrogen() and not use_hydrogens)):
-                    map_value_em = em_data.eight_point_interpolation(unit_cell.fractionalize(atom.xyz))
-                    map_value_fc = fc_map.eight_point_interpolation(unit_cell.fractionalize(atom.xyz))
-                    residue_sites_cart.append(atom.xyz)
-                    residue_b.append(atom.b)
-                    residue_occ.append(atom.occ)
-                    residue_mv1.append(map_value_em)
-                    residue_mv2.append(map_value_fc)
-                    residue_rad.append(rad)
-            sel = maptbx.grid_indices_around_sites(
-            unit_cell=unit_cell,
-            fft_n_real=shifted_map.data.focus(),
-            fft_m_real=shifted_map.data.all(),
-            sites_cart=residue_sites_cart,
-            site_radii=residue_rad)
-            cc = flex.linear_correlation(x=em_data.select(sel),
-            y=fc_map.select(sel)).coefficient()
-            result = group_args(
-            residue=residue,
-            chain_id=chain.id,
-            id_str=residue_id_str,
-            cc=cc,
-            map_value_em=flex.mean(residue_mv1),
-            map_value_fc=flex.mean(residue_mv2),
-            b=flex.mean(residue_b),
-            occupancy=flex.mean(residue_occ),
-            n_atoms=residue_sites_cart.size())
-            results.append(result)
-    cc_sum = 0
-    for result in results:
-        cc_sum += result.cc
-    cc_overall_model = cc_sum / len(results)
-    cc_overall_cell = flex.linear_correlation(x=em_data.as_1d(), y=fc_map.as_1d()).coefficient()
-
-    print "\nOverall real-space correlation (around atoms): %g" % cc_overall_model
+    print "\nOverall real-space correlation (unit cell)   : %g\n" % cc_overall_cell
 
 def prepare_reference_and_experimental_map_for_locscale (args, out=sys.stdout):
     """
     """  
-    map_out, model_out, model_map_out = generate_output_file_names(args.em_map, args.model_coordinates)
+    map_out, model_out, model_map_out, mask_out = generate_output_file_names(args.em_map, args.model_coordinates, args.mask)
     target_map = file_reader.any_file(args.em_map.name).file_object
     input_model = file_reader.any_file(args.model_coordinates.name).file_object
+    mask = file_reader.any_file(args.mask.name).file_object
     d_min = get_dmin(args.resolution, target_map)
     sc_table = args.table
   
@@ -278,7 +214,8 @@ def prepare_reference_and_experimental_map_for_locscale (args, out=sys.stdout):
     except AssertionError:
         print "Different dimension of experimental and simulated model map."
   
-    em_data, shifted_map = shift_map_to_zero_origin(target_map, cg, map_out)
+    shift_map_to_zero_origin(mask, cg, mask_out)
+    em_data, shifted_map = shift_map_to_zero_origin(target_map, cg, map_out, return_map=True)
     
     if args.rscc:
         detail, atom_radius = set_detail_level_and_radius(d_min)
